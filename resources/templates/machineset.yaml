@@ -1,0 +1,82 @@
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  name: cluster-bq9vn-tpr58-worker-us-east-2c-gpu
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: cluster-bq9vn-tpr58
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: cluster-bq9vn-tpr58
+      machine.openshift.io/cluster-api-machineset: cluster-bq9vn-tpr58-worker-us-east-2c-gpu
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: cluster-bq9vn-tpr58
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: cluster-bq9vn-tpr58-worker-us-east-2c-gpu
+    spec:
+      lifecycleHooks: {}
+      metadata: {}
+      providerSpec:
+        value:
+          userDataSecret:
+            name: worker-user-data
+          placement:
+            availabilityZone: us-east-2c
+            region: us-east-2
+          credentialsSecret:
+            name: aws-cloud-credentials
+          capacityReservationId: ''
+          instanceType: g6e.2xlarge
+          metadata:
+            creationTimestamp: null
+          blockDevices:
+            - ebs:
+                encrypted: true
+                iops: 0
+                kmsKey:
+                  arn: ''
+                volumeSize: 100
+                volumeType: gp2
+          securityGroups:
+            - filters:
+                - name: 'tag:Name'
+                  values:
+                    - cluster-bq9vn-tpr58-node
+            - filters:
+                - name: 'tag:Name'
+                  values:
+                    - cluster-bq9vn-tpr58-lb
+          kind: AWSMachineProviderConfig
+          metadataServiceOptions: {}
+          tags:
+            - name: kubernetes.io/cluster/cluster-bq9vn-tpr58
+              value: owned
+            - name: Stack
+              value: project ocp4-cluster-bq9vn
+            - name: env_type
+              value: ocp4-cluster
+            - name: guid
+              value: bq9vn
+            - name: owner
+              value: unknown
+            - name: platform
+              value: RHPDS
+            - name: uuid
+              value: 8ef95394-7939-5e18-831d-2d7f7fceb8e3
+          deviceIndex: 0
+          ami:
+            id: ami-078e26f293629fe91
+          subnet:
+            filters:
+              - name: 'tag:Name'
+                values:
+                  - cluster-bq9vn-tpr58-subnet-private-us-east-2c
+          apiVersion: machine.openshift.io/v1beta1
+          iamInstanceProfile:
+            id: cluster-bq9vn-tpr58-worker-profile
+

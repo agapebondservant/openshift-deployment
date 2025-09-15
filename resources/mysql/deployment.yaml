@@ -1,0 +1,54 @@
+  # mysql-deployment.yaml (example for a single instance)
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: mysql-deployment
+  spec:
+    selector:
+      matchLabels:
+        app: mysql
+    template:
+      metadata:
+        labels:
+          app: mysql
+      spec:
+        containers:
+          - name: mysql
+            image: mysql:8.3.0
+            args:
+              - --datadir
+              - /var/lib/mysql/datadir
+              - --default-authentication-plugin=mysql_native_password
+            env:
+              - name: MYSQL_ROOT_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: mysql-root-pass
+                    key: password
+              - name: MYSQL_DATABASE
+                value: demo
+              - name: MYSQL_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: mysql-user-pass
+                    key: username
+              - name: MYSQL_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: mysql-user-pass
+                    key: password
+            ports:
+              - containerPort: 3306
+            volumeMounts:
+              - name: mysql-persistent-storage
+                mountPath: /var/lib/mysql
+              - name: mysql-config-volume
+                mountPath: /etc/mysql/conf.d/my.cnf
+                subPath: my.cnf
+        volumes:
+          - name: mysql-persistent-storage
+            persistentVolumeClaim:
+              claimName: mysql-pv-claim
+          - name: mysql-config-volume
+            configMap:
+              name: mysql-config
