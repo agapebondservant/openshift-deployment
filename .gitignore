@@ -3,3 +3,4 @@ users.htpasswd
 resources/wb-secret.yaml
 clusterpolicy.json
 resources/devspaces/secret.yaml
+/dcgm-exporter-dashboard.json

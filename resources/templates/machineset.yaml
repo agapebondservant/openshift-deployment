@@ -31,7 +31,7 @@ spec:
           credentialsSecret:
             name: aws-cloud-credentials
           capacityReservationId: ''
-          instanceType: g6e.2xlarge
+          instanceType: g6.8xlarge
           metadata:
             creationTimestamp: null
           blockDevices:

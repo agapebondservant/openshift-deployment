@@ -140,3 +140,18 @@ oc start-build data-prep-wb --from-dir docker --follow
 	oc create secret generic data-prep-wb --from-env-file .env
 	oc get secret data-prep-wb -oyaml > openshift/wb-secret.yaml
     ```
+ 
+## Other
+### Deploying LLMs with larger context lengths
+1. Include the following configuration during deployment:
+   ```
+   args: --hf-overrides.max-position-embeddings=16000
+   ```
+   or
+   ```
+   args: --max-model-len=16000
+        --hf-overrides.max_model_len=16000
+        --enforce-eager
+   env: VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
+   ```
+2. 
