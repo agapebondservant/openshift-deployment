@@ -105,11 +105,57 @@ oc apply -f resources/devspaces/secret.yaml
 
 15. Install MySQL Instance:
 ```
+oc new-project mysql
 oc create secret generic mysql-root-pass --from-literal=password=$MYSQL_ROOT_PASSWORD -n mysql
 oc create secret generic mysql-user-pass --from-literal=username=mysql --from-literal=password=$MYSQL_USER_PASSWORD -n mysql
 oc apply -f resources/mysql -n mysql
 oc expose deploy mysql-deployment -n mysql
 oc expose svc mysql-deployment -n mysql
+```
+
+16. Install TrustyAI:
+```
+
+```
+
+17. Install N8N: (Docs: https://community-charts.github.io/docs/charts/n8n/usage)
+```
+# As a pre-requisite, run the following commands if a customer docker image does not already exist (tested with 8GB RAM):
+source .env
+sudo dnf install container-tools
+oc new-project n8n
+oc create secret docker-registry quay-creds --docker-server=quay.io --docker-username=${DOCKER_USERNAME}${DOCKER_USERNAME_SUFFIX} --docker-password=${DOCKER_PASSWORD} --docker-email=${DOCKER_EMAIL}
+oc new-build --name=n8n-custom --to="quay.io/oawofolurh/n8n:latest" --strategy=docker --push-secret quay-creds --binary
+oc start-build n8n-custom --from-dir docker --follow
+
+# Run the following to install N8N:
+helm repo add community-charts https://community-charts.github.io/helm-charts
+helm repo update
+oc adm policy add-scc-to-user anyuid -z n8n
+oc apply -f resources/n8n/deployment.yaml -n n8n
+oc expose svc n8n -n n8n
+# Access the N8N UI: echo http://`oc get route -o json | jq -r '.items[0].spec.host'`
+```
+18. Install Airbyte: (Docs: https://docs.airbyte.com)
+```
+helm repo add airbyte https://airbytehq.github.io/helm-charts
+helm repo update
+oc new-project airbyte
+helm install airbyte airbyte/airbyte
+```
+19. Install OpenWebUI:
+oc new-project openwebui
+helm repo add open-webui https://open-webui.github.io/helm-charts
+helm repo update
+helm install openwebui open-webui/open-webui  
+
+20. Install AnythingLLM 1.6.0+:
+```
+oc apply -f resources/anythingllm/deployment.yaml
+oc expose deploy anythingllm --port 3001
+oc expose svc anythingllm
+# Access the AnythingLLM UI: echo http://`oc get route -o json | jq -r '.items[0].spec.host'`
+
 ```
 
 ## To Build A Custom Workbench Image
@@ -133,12 +179,20 @@ oc start-build data-prep-wb --from-dir docker --follow
 ## To Deploy Custom Workbench
 1. Use the image built above to import a new notebook image
 	* Attach a GPU accelerator profile if one exists
+    * For AnythingLLM: Use quay.io/rh-aiservices-bu/anythingllm-workbench
 2. When creating the workbench in the Web GUI Console:
 	* Use the following script to generate the **wb-secret.yaml** file to attach to the workbench:
 	
 	```
 	oc create secret generic data-prep-wb --from-env-file .env
 	oc get secret data-prep-wb -oyaml > openshift/wb-secret.yaml
+    ```
+ 
+    For AnythingLLM:
+    ```
+	oc create secret generic anythingllm-wb --from-env-file resources/anythingllm/.env
+	oc get secret anythingllm-wb -oyaml > resources/anythingllm/wb-secret.yaml
+    
     ```
  
 ## Other
@@ -154,4 +208,7 @@ oc start-build data-prep-wb --from-dir docker --follow
         --enforce-eager
    env: VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
    ```
-2. 
+2. .
+
+### Build ModelCar images
+1. 

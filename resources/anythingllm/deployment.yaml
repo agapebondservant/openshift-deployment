@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anythingllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anythingllm
+  template:
+    metadata:
+      labels:
+        app: anythingllm
+    spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: anythingllm
+        image: mintplexlabs/anythingllm:latest
+        env:
+        - name: STORAGE_DIR
+          value: "/app/server/storage"
+        volumeMounts:
+        - name: anythingllm-storage
+          mountPath: "/app/server/storage"
+      volumes:
+      - name: anythingllm-storage
+        persistentVolumeClaim:
+          claimName: anythingllm-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: anythingllm-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi # Request desired storage size

@@ -4,3 +4,5 @@ resources/wb-secret.yaml
 clusterpolicy.json
 resources/devspaces/secret.yaml
 /dcgm-exporter-dashboard.json
+resources/anythingllm/.env
+resources/deployment_new.yaml
