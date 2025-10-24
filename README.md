@@ -88,12 +88,13 @@ oc label configmap nvidia-dcgm-exporter-dashboard -n openshift-config-managed "c
 
 # NVIDIA GPU Operator Dashboard
 helm repo add rh-ecosystem-edge https://rh-ecosystem-edge.github.io/console-plugin-nvidia-gpu
-helm update
+helm repo update
 helm install -n nvidia-gpu-operator console-plugin-nvidia-gpu rh-ecosystem-edge/console-plugin-nvidia-gpu
 oc get consoles.operator.openshift.io cluster --output=jsonpath="{.spec.plugins}"
 ```
 
-14. Install Dev Spaces:
+14. Install Dev Spaces: (use <a href="https://github.com/settings/applications/new" 
+target="_blank">DevSpaces documentation</a>)
 ```
 source .env
 export DEVSPACES_CLIENT_ID=$DEVSPACES_CLIENT_ID
@@ -129,11 +130,13 @@ oc new-build --name=n8n-custom --to="quay.io/oawofolurh/n8n:latest" --strategy=d
 oc start-build n8n-custom --from-dir docker --follow
 
 # Run the following to install N8N:
+oc new-project n8n
 helm repo add community-charts https://community-charts.github.io/helm-charts
 helm repo update
-oc adm policy add-scc-to-user anyuid -z n8n
+oc apply -f resources/n8n/pvc.yaml -n n8n
 oc apply -f resources/n8n/deployment.yaml -n n8n
-oc expose svc n8n -n n8n
+oc adm policy add-scc-to-user anyuid -z n8n-workflows
+oc expose svc n8n-workflows -n n8n
 # Access the N8N UI: echo http://`oc get route -o json | jq -r '.items[0].spec.host'`
 ```
 18. Install Airbyte: (Docs: https://docs.airbyte.com)
@@ -147,16 +150,15 @@ helm install airbyte airbyte/airbyte
 oc new-project openwebui
 helm repo add open-webui https://open-webui.github.io/helm-charts
 helm repo update
-helm install openwebui open-webui/open-webui  
+helm install openwebui open-webui/open-webui
 
-20. Install AnythingLLM 1.6.0+:
-```
-oc apply -f resources/anythingllm/deployment.yaml
-oc expose deploy anythingllm --port 3001
-oc expose svc anythingllm
-# Access the AnythingLLM UI: echo http://`oc get route -o json | jq -r '.items[0].spec.host'`
+20. Set up MCP Server:
 
 ```
+
+```
+
+21. 
 
 ## To Build A Custom Workbench Image
 
@@ -185,7 +187,7 @@ oc start-build data-prep-wb --from-dir docker --follow
 	
 	```
 	oc create secret generic data-prep-wb --from-env-file .env
-	oc get secret data-prep-wb -oyaml > openshift/wb-secret.yaml
+	oc get secret data-prep-wb -oyaml > resources/wb-secret.yaml
     ```
  
     For AnythingLLM:
@@ -211,4 +213,12 @@ oc start-build data-prep-wb --from-dir docker --follow
 2. .
 
 ### Build ModelCar images
-1. 
+NOTES:
+1. When pulling from a private registry, set up a secret with the appropriate
+auth credentials and link it to the service account ("default" in the example 
+below) for the deployment:
+```
+oc create secret docker-registry quay-creds --docker-server=quay.io --docker-username=${DOCKER_USERNAME}${DOCKER_USERNAME_SUFFIX} --docker-password=${DOCKER_PASSWORD} --docker-email=${DOCKER_EMAIL}
+secret/quay-creds created
+oc secrets link default quay-creds --for=pull
+```

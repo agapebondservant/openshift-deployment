@@ -6,3 +6,4 @@ resources/devspaces/secret.yaml
 /dcgm-exporter-dashboard.json
 resources/anythingllm/.env
 resources/deployment_new.yaml
+wb-secret.yaml

@@ -1,17 +1,28 @@
-FROM docker.io/library/python:3.12 as builder
+FROM n8nio/n8n:1.114.4
 
 USER root
 
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    ffmpeg \
+    build-base \
+    python3-dev \
+    libffi-dev \
+    openssl-dev \
+    cargo \
+    portaudio-dev \
+    musl-dev \
+    g++ \
+    pkgconfig
+
+
 COPY requirements.txt ./requirements.txt
 
-RUN python3 -m pip install --upgrade pip \
-        && pip install -r requirements.txt
-        #&& chown -R 1001:1001 /usr/local/lib/python3.12/site-packages
+COPY n8n-task-runners.json /etc/n8n-task-runners.json
 
-FROM n8nio/n8n:1.114.4
-
-USER 1001
-
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/python3 -m ensurepip && \
+    /opt/venv/bin/pip3 install --no-cache --upgrade pip setuptools wheel && \
+    /opt/venv/bin/pip install --no-cache-dir --no-deps -r requirements.txt
 USER node

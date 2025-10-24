@@ -154,10 +154,14 @@ metadata:
     heritage: Helm
 data:
   N8N_RUNNERS_ENABLED: "true"
-  N8N_RUNNERS_MODE: "internal"
+  N8N_RUNNERS_MODE: "external"
   N8N_RUNNERS_TASK_TIMEOUT: "60"
   N8N_RUNNERS_HEARTBEAT_INTERVAL: "30"
   N8N_RUNNERS_MAX_CONCURRENCY: "5"
+  N8N_RUNNERS_STDLIB_ALLOW: "*"
+  N8N_RUNNERS_EXTERNAL_ALLOW: "*"
+  N8N_NATIVE_PYTHON_RUNNER: "true"
+  N8N_RUNNERS_AUTH_TOKEN: "runner123"
 ---
 # Source: n8n/templates/configmap.yaml
 apiVersion: v1
@@ -274,11 +278,14 @@ spec:
             runAsGroup: 1000
             runAsNonRoot: true
             runAsUser: 1000
-          image: "quay.io/oawofolurh/n8n-workflows"
-          imagePullPolicy: IfNotPresent
+          image: "quay.io/oawofolurh/n8n-workflows:v8"
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 5678
+              protocol: TCP
+            - name: http2
+              containerPort: 5679
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -309,6 +316,8 @@ spec:
               value: "Europe/Berlin"
             - name: N8N_GRACEFUL_SHUTDOWN_TIMEOUT
               value: "30"
+            - name: N8N_DISABLE_UI_SECURITY
+              value: "true"
           envFrom:
             - configMapRef:
                 name: n8n-workflows-database-configmap
@@ -330,3 +339,32 @@ spec:
                 name: n8n-workflows-binary-data-configmap
             - secretRef:
                 name: n8n-workflows-encryption-key-secret-v2
+          volumeMounts:
+            - mountPath: /home/node/.n8n
+              name: n8n-storage
+        - name: n8n-task-runner
+          image: "quay.io/oawofolurh/n8n-runners:v8"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+          resources:
+             requests:
+               cpu: 100m
+               memory: 8Gi
+          env:
+            - name: N8N_RUNNERS_TASK_BROKER_URI
+              value: "http://n8n-main:5679"
+          envFrom:
+            - configMapRef:
+                name: n8n-workflows-task-broker-configmap
+      volumes:
+        - name: n8n-storage
+          persistentVolumeClaim:
+            claimName: n8n-pvc
