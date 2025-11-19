@@ -158,7 +158,29 @@ helm install openwebui open-webui/open-webui
 
 ```
 
-21. 
+21. Install Postgres:
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+#brew install postgresql #for mac users
+oc new-project postgresql
+helm install my-postgresql bitnami/postgresql \
+      --set postgresqlDatabase=demo \
+      --set primary.persistence.size=10Gi
+```
+
+Test the installation:
+```
+export POSTGRES_PASSWORD=$(oc get secret my-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+oc port-forward --namespace postgresql svc/my-postgresql 5432:5432
+PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
+```
+
+To uninstall:
+```
+helm install my-postgresql
+oc delete pvc data-my-postgresql-0 -npostgresql
+```
 
 ## To Build A Custom Workbench Image
 
@@ -209,6 +231,14 @@ oc start-build data-prep-wb --from-dir docker --follow
         --hf-overrides.max_model_len=16000
         --enforce-eager
    env: VLLM_ALLOW_LONG_MAX_MODEL_LEN=1
+   ```
+2. .
+
+
+### Deploying LLMs with custom dependencies (Method 1)
+1. Deploy a custom serving runtime
+   ```
+   oc apply -f resources/custom-vllm-serving-runtime/custom-vllm.yaml
    ```
 2. .
 
