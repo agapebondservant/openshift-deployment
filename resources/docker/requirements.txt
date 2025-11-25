@@ -20,6 +20,9 @@ langchain-graph-retriever==0.8.0
 keybert==0.9.0
 rake-spacy==0.3.1
 lancedb==0.25.2
+pytesseract==0.3.13
+jsonpath_ng==1.7.0
+validators==0.35.0
 #chromadb==1.0.15
 #langchain-chroma==0.2.4
 #training-hub

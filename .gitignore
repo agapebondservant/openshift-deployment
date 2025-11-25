@@ -7,3 +7,4 @@ resources/devspaces/secret.yaml
 resources/anythingllm/.env
 resources/deployment_new.yaml
 wb-secret.yaml
+resources/llamastack/llama-stack-mcp-server

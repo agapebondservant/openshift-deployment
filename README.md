@@ -252,3 +252,30 @@ oc create secret docker-registry quay-creds --docker-server=quay.io --docker-use
 secret/quay-creds created
 oc secrets link default quay-creds --for=pull
 ```
+
+### Setting up LLama Stack (https://github.com/rh-ai-quickstart/llama-stack-mcp-server?tab=readme-ov-file#install)
+```
+oc new-project llama-stack-mcp-demo
+cd resources/llamastack/
+git clone https://github.com/rh-ai-quickstart/llama-stack-mcp-server.git && \
+    cd llama-stack-mcp-server/
+export DEVICE="gpu"
+cp resources/templates/llamastackvalues.yaml resources/llamastack/llama-stack-mcp-server/helm/llama3.2-3b/values.yaml
+helm dependency build ./helm/llama-stack-mcp
+helm install llama-stack-mcp ./helm/llama-stack-mcp --set device=$DEVICE \
+  --set llama-stack.device=$DEVICE \
+  --set llama3-2-3b.device=$DEVICE
+# (NOTE: May need to delete the llama-stack pod to force its redeployment 
+after Llama 3 is deployed, if the Llama model takes too long to deploy) 
+# Once deployed, playground route should be available thus:   
+# export  PLAYGROUND_URL=$(oc get route llama-stack-playground -o jsonpath='{.spec.host}' 2>/dev/null || echo "Route not found")
+# echo "Playground: https://$PLAYGROUND_URL"
+cd - 
+```
+
+### Setting up Label Studio:
+```
+oc new-project label-studio
+oc apply -f resources/label-studio/label-studio-all.yaml
+#Access the UI: echo http://`oc get route -o json | jq -r '.items[0].spec.host'`
+```

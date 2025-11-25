@@ -1,0 +1,82 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: label-studio-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  volumeMode: Filesystem
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: label-studio-deployment
+  labels:
+    app: label-studio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: label-studio
+  template:
+    metadata:
+      labels:
+        app: label-studio
+    spec:
+      containers:
+      - name: label-studio
+        image: heartexlabs/label-studio:latest
+        command: ["sh", "-c"]
+        args: ["label-studio"]
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: label-studio-data
+          mountPath: /label-studio/data
+      volumes:
+      - name: label-studio-data
+        persistentVolumeClaim:
+          claimName: label-studio-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: label-studio-service
+spec:
+  selector:
+    app: label-studio
+  ports:
+    - name: main
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  env:
+    - name: CSRF_TRUSTED_ORIGINS
+      value: https://label-studio-route-label-studio.apps.cluster-nlx4n.nlx4n.sandbox5538.opentlc.com
+    - name: USE_X_FORWARDED_HOST
+      value: true
+    - name: USE_X_FORWARDED_PORT
+      value: true
+    - name: SECURE_PROXY_SSL_HEADER
+      value: HTTP_X_FORWARDED_PROTO,https
+  type: ClusterIP
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: label-studio-route
+spec:
+  to:
+    kind: Service
+    name: label-studio-service
+    weight: 100
+  port:
+    targetPort: main
+  wildcardPolicy: None
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

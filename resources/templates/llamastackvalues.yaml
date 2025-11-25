@@ -1,0 +1,109 @@
+# Default values for llama3.2-3b
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: ""
+
+# User-customizable configuration
+device: "gpu"  # Options: "gpu", "hpu"
+
+# Model configuration
+model:
+  maxModelLen: 8192
+
+resources:
+  gpu:
+    limits:
+      nvidia.com/gpu: "1"
+      memory: "24Gi"
+      cpu: "4"
+    requests:
+      nvidia.com/gpu: "1"
+      memory: "16Gi"
+      cpu: "2"
+  hpu:
+    limits:
+      cpu: "6"
+      memory: "24Gi"
+      habana.ai/gaudi: "1"
+    requests:
+      cpu: "4"
+      memory: "16Gi"
+      habana.ai/gaudi: "1"
+
+nodeSelector:
+  gpu:
+    nvidia.com/gpu.present: "true"
+  hpu: {}
+
+tolerations:
+  gpu:
+    - effect: NoSchedule
+      key: nvidia.com/gpu
+      value: "True" #NVIDIA-A10G-SHARED
+  hpu:
+    - effect: NoSchedule 
+      key: habana.ai/gaudi
+      operator: Exists
+
+affinity:
+  gpu: {}
+#  gpu:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: nvidia.com/gpu.present
+#            operator: In
+#            values:
+#            - "true"
+  hpu: {}
+
+# Environment variables
+env:
+  CUDA_VISIBLE_DEVICES: "0"
+  HABANA_VISIBLE_DEVICES: "all"
+  TRANSFORMERS_CACHE: "/root/.cache/huggingface"
+  HF_HOME: "/root/.cache/huggingface"
+
+# modelHardware configuration, used for both inferenceService and servingRuntime
+modelHardware:
+  gpu: 
+    name: "llama3-2-3b-gpu"
+    displayName: "llama3.2-3b-gpu"
+  hpu: 
+    name: "llama3-2-3b-hpu"
+    displayName: "llama3.2-3b-hpu"
+
+# InferenceService configuration
+inferenceService:
+  common:
+    maxReplicas: 1
+    minReplicas: 1
+    modelFormat: "vLLM"
+    modelName: ""
+    storageUri: "oci://quay.io/redhat-ai-services/modelcar-catalog:llama-3.2-3b-instruct"
+
+# Serving Runtime configuration
+servingRuntime:
+  common:
+    enabled: true  # Set to true to create a ServingRuntime resource
+    shmSizeLimit: "1Gi"
+    memBufferBytes: 134217728  # 128MB
+    modelLoadingTimeoutMillis: 90000  # 90 seconds
+  gpu:
+    recommendedAccelerators:
+      - "nvidia.com/gpu"
+    templateDisplayName: "vLLM ServingRuntime for KServe"
+    templateName: "vllm-runtime"
+    acceleratorName: "gpu"
+    image: "quay.io/modh/vllm@sha256:0d55419f3d168fd80868a36ac89815dded9e063937a8409b7edf3529771383f3"
+  hpu:
+    recommendedAccelerators:
+      - "habana.ai/gaudi"
+    templateDisplayName: "vLLM Intel Gaudi Accelerator ServingRuntime for KServe"
+    templateName: "vllm-gaudi-runtime"
+    acceleratorName: "gaudi-hpu-profile"
+    image: "quay.io/modh/vllm:vllm-gaudi-v2-25-on-push-n7985-build-images"
