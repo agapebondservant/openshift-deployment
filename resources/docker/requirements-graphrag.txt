@@ -14,3 +14,4 @@ datasets==4.4.1
 pytesseract==0.3.13
 jsonpath_ng==1.7.0
 validators==0.35.0
+pypdfium2==4.30.0

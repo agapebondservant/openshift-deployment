@@ -23,6 +23,11 @@ lancedb==0.25.2
 pytesseract==0.3.13
 jsonpath_ng==1.7.0
 validators==0.35.0
+datasets==4.4.1
+pytesseract==0.3.13
+jsonpath_ng==1.7.0
+validators==0.35.0
+pypdfium2==4.30.0
 #chromadb==1.0.15
 #langchain-chroma==0.2.4
 #training-hub

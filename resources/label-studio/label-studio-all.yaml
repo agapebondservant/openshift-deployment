@@ -37,6 +37,19 @@ spec:
         volumeMounts:
         - name: label-studio-data
           mountPath: /label-studio/data
+        env:
+        - name: CSRF_TRUSTED_ORIGINS
+          value: "https://label-studio-route-label-studio.apps.cluster-nlx4n.nlx4n.sandbox5538.opentlc.com"
+        - name: USE_X_FORWARDED_HOST
+          value: "True"
+        - name: USE_X_FORWARDED_PORT
+          value: "True"
+        - name: SECURE_PROXY_SSL_HEADER
+          value: HTTP_X_FORWARDED_PROTO,https
+        - name: CSRF_COOKIE_SECURE
+          value: "1"
+        - name: SESSION_COOKIE_SECURE
+          value: "1"
       volumes:
       - name: label-studio-data
         persistentVolumeClaim:
@@ -54,15 +67,6 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: 8080
-  env:
-    - name: CSRF_TRUSTED_ORIGINS
-      value: https://label-studio-route-label-studio.apps.cluster-nlx4n.nlx4n.sandbox5538.opentlc.com
-    - name: USE_X_FORWARDED_HOST
-      value: true
-    - name: USE_X_FORWARDED_PORT
-      value: true
-    - name: SECURE_PROXY_SSL_HEADER
-      value: HTTP_X_FORWARDED_PROTO,https
   type: ClusterIP
 ---
 kind: Route

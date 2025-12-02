@@ -4,4 +4,5 @@ schema: v1
 mcpServers:
   - name: LanceDB MCP Server
     type: streamable-http
-    url: https://lancedb-mcp-server-mcpserver.apps.cluster-2gnbb.2gnbb.sandbox2594.opentlc.com/mcp
+    url: https://lancedb-mcp-server-mcpserver.apps.cluster-nlx4n.nlx4n.sandbox5538.opentlc.com/mcp
+    timeout: 300000
