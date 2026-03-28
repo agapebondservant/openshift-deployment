@@ -91,9 +91,15 @@ helm repo add rh-ecosystem-edge https://rh-ecosystem-edge.github.io/console-plug
 helm repo update
 helm install -n nvidia-gpu-operator console-plugin-nvidia-gpu rh-ecosystem-edge/console-plugin-nvidia-gpu
 oc get consoles.operator.openshift.io cluster --output=jsonpath="{.spec.plugins}"
+
+# vLLM Dashboard
+curl -LfO https://raw.githubusercontent.com/redhat-et/ai-observability/refs/heads/main/vllm-dashboards/vllm-grafana-openshift.json
+oc create configmap vllm-dashboard -n openshift-config-managed --from-file=vllm-grafana-openshift.json
+oc label configmap vllm-dashboard -n openshift-config-managed "console.openshift.io/dashboard=true"
+oc label configmap vllm-dashboard -n openshift-config-managed "console.openshift.io/odc-dashboard=true"
 ```
 
-14. Install Dev Spaces: (use <a href="https://github.com/settings/applications/new" 
+14. Install Dev Spaces: (use <a href="https://docs.redhat.com/en/documentation/red_hat_openshift_dev_spaces/3.0/html/administration_guide/installing-devspaces" 
 target="_blank">DevSpaces documentation</a>)
 ```
 source .env

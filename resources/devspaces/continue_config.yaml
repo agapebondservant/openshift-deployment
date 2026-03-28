@@ -5,7 +5,7 @@ models:
     provider: openai
     apiBase: https://granite-4-tiny-demo.apps.cluster-nlx4n.nlx4n.sandbox5538.opentlc.com/v1/
     model: granite-4-tiny
-    apiKey:
+    apiKey: eyJhbGciOiJSUzI1NiIsImtpZCI6IlhYMks3b2l2VUsxcDZhbl9ORnJEZkx4My1IcjV2VFFBZUpGZ01Gc1FMX1kifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZW1vIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRlZmF1bHQtbmFtZS1ncmFuaXRlLTQtdGlueS1zYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJncmFuaXRlLTQtdGlueS1zYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImI3ODc4NTYzLWZjMTgtNGNiYS1hNzg1LWU2YWMwMzAwYjMyMiIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZW1vOmdyYW5pdGUtNC10aW55LXNhIn0.RedZw-ygB2vdaNBeixjStXv5Mymp3-AGRpPS1Ei77D6uFyLTEy6STPEVFoBaQV-05fiHuDNtrfZcAfYFb9m-vU8AruW2prMG9HYrMSsyut0OyS2XrbaKaXRG5V8fEoZdbyPOV5zI46gJXLf6qnIk68uCuEUmMo3yQzaCJRij4_5pNknHvJiumKZK7BhEFMVe4czL5L6I2_Kep5uyXOHHsdyasicCtl97FOpab8KC7Jjdi6-5bAbEGnrjiqvc96B8O3QGGtjUZruLggtDMCfWjUMI8AC1oekwElNzMpRXQsvLBf2gzU-kBO3RwaZTKE8vXiizRriUHRTsur1qBoAr6u-PLEz80dfDY4dV39wqXmFE4TQbZx-S81eyNYFEKgHvY0GRKgHmP3kMqc4OGsp07wKC3QSbvLhyvPFdzRoumRC-n7mzGEpf9LrS1FmlrjpJTdtmTYkij4BFltL6Kvbi6zBnwDlIoXZkemxIN9dcIKXlZ_vn_jBQ264uEoRXh1xPgnVQYsHKJNAxtvRUgrOq21jkm5f3ea8qbzZMy6DXEBXKbj8O6R2gzDThxZL4HFpcIpoGxKIw2z7JLaTa57k9S-sfNz-adzmBvdjTepwjLGr_T9tszkgdnW4D8gknRzI2YUCBSZRVq0O0JHbN2lDhKFPTreptpzK2d8HphRP4yRA
     roles:
       - chat
       - edit
@@ -18,7 +18,7 @@ models:
     provider: openai
     apiBase: https://openrouter.ai/api/v1
     model: openai/gpt-oss-20b
-    apiKey: 
+    apiKey: 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
     roles:
       - chat
       - edit

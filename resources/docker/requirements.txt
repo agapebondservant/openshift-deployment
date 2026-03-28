@@ -28,6 +28,11 @@ pytesseract==0.3.13
 jsonpath_ng==1.7.0
 validators==0.35.0
 pypdfium2==4.30.0
+deepeval==3.6.8
+evaluate==0.4.6
+rouge_score==0.1.2
+bert_score==0.3.13
+codebleu==0.7.0
 #chromadb==1.0.15
 #langchain-chroma==0.2.4
 #training-hub

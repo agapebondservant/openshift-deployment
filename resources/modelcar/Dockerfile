@@ -6,7 +6,7 @@ ENV HF_TOKEN=${HF_TOKEN}
 
 USER root
 
-RUN pip install huggingface-hub
+RUN pip install huggingface-hub hf_transfer
 
 COPY download_model.py .
 
